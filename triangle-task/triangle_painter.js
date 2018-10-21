@@ -94,7 +94,7 @@ function OpenglTrianglePainter() {
         gl.enableVertexAttribArray(attrib_index);
     };
 
-    this.draw_everything = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture)
+    this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture)
     {
 
         /*
@@ -164,5 +164,5 @@ function OpenglTrianglePainter() {
           const offset = 0;
           gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         }
-    }; // draw_everything
+    }; // draw_textured_triangle
 };

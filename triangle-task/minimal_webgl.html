@@ -68,7 +68,7 @@ var guy = new OpenglTrianglePainter();
                        0.0,  1.0,
                    ]);
 
-        guy.draw_everything(gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
+        guy.draw_textured_triangle(gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
         requestAnimationFrame(render);
 
     }
@@ -84,7 +84,7 @@ var guy = new OpenglTrianglePainter();
         console.log(guy.texture_coords_array[1], Math.PI);
 
         if (guy.brightnessBoost[0] < 0.) guy.brightnessBoost[0] = 0.
-        guy.draw_everything(guy.gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
+        guy.draw_textured_triangle(guy.gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
 
     }
 
