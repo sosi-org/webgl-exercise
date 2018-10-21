@@ -25,6 +25,19 @@
     var guy = new OpenglTrianglePainter();
     var global_gl = null;
 
+    function init_gl() {
+        // Get the WebGL context from the canvas
+        try {
+            var gl = document.getElementById("glcanvas").getContext("webgl");
+        } catch(ex) {
+            console.log("Unable to initialize WebGL. Your browser may not support it.");
+            var gl = null;
+            alert('Sorry, no WebGL');
+        }
+
+        return gl;
+    }
+
     function make_buffer(gl, textureCoordinates)
     {
         const buffer = gl.createBuffer();
@@ -36,20 +49,13 @@
 
     function main()
     {
-        // Get the WebGL context from the canvas
-        try {
-            var gl = document.getElementById("glcanvas").getContext("webgl");
-        } catch(ex) {
-            console.log("Unable to initialize WebGL. Your browser may not support it.");
-            var gl = null;
-            alert('Sorry, no WebGL');
-        }
 
+        let gl = init_gl();
        guy.init_shaders(gl);
 
        global_gl = gl;
 
-       var texture_ = loadTexture2(gl, './images/painting.gif');
+       var texture_ = load_texture(gl, './images/painting.gif');
        guy.texture = texture_;
 
        guy.brightnessBoost = [0., 0., 0.]; //[0.333/10, 0.666/10, 0.999/10];
@@ -145,7 +151,7 @@
     }
 
 
-    function loadTexture2(gl, url /*, callback2*/) {
+    function load_texture(gl, url /*, callback2*/) {
         console.log(gl);
 
         const texture1 = gl.createTexture();
@@ -159,18 +165,23 @@
         const srcFormat = gl.RGBA;
         const srcType = gl.UNSIGNED_BYTE;
 
-        const preview_single_pixel = new Uint8Array([255, 0, 0, 255]);  // opaque blue
+        // What to show before the image is loaded
+        const preview_single_pixel = new Uint8Array([0, 255, 0, 255]);  // green
+
         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                       width, height, border, srcFormat, srcType,
                       preview_single_pixel);
 
 
         load_image(url, function(image) {
-            //console.log(gl);
 
             gl.bindTexture(gl.TEXTURE_2D, texture1);
             gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                     srcFormat, srcType, image);
+
+            function isPowerOf2(value) {
+                return (value & (value - 1)) == 0;
+            }
 
             if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
                gl.generateMipmap(gl.TEXTURE_2D);
@@ -187,16 +198,7 @@
     }
 
 
-
-    function isPowerOf2(value) {
-      return (value & (value - 1)) == 0;
-    }
-
-    //function drawObject(gl, shaderProgram, coordDimensions, brightnessBoost, vertexCoords_array) {
-    //}
-
     /*
-    // Note!!!: You'd have to change this code to delete the resources YOU created.
     gl.deleteTexture(someTexture);
     gl.deleteTexture(someOtherTexture);
     gl.deleteBuffer(someBuffer);
