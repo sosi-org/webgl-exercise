@@ -59,7 +59,8 @@
        var texture_ = load_texture(gl, './images/painting.gif');
        global_globjs.texture = texture_;
 
-       //var bg_texture_ = load_texture(gl, 'http://www.guoguiyan.com/data/out/197/68440135-tile-wallpapers.jpg');
+       var bg_texture_ = load_texture(gl, 'http://www.guoguiyan.com/data/out/197/68440135-tile-wallpapers.jpg');
+       global_globjs.bg_texture = texture_;
 
 
        global_state.brightnessBoost = [0., 0., 0.]; //[0.333/10, 0.666/10, 0.999/10];
@@ -80,7 +81,7 @@
                    ]);
 
         //guy.draw_everything(gl);
-        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture);
+        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture, global_globjs.bg_texture);
 
         requestAnimationFrame(render);
 
@@ -98,7 +99,7 @@
             global_state.brightnessBoost[0] = 0.
 
         //guy.draw_everything(guy.gl);
-        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture);
+        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture, global_globjs.bg_texture);
 
     }
 
