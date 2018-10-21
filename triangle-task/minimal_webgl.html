@@ -251,7 +251,9 @@ var guy = new Glbal();
     }
 
     function render_rate_limited() {
-        guy.triangle_vertices[0] += 0.002;
+        //guy.triangle_vertices[0] += 0.002;
+        guy.triangle_vertices[0] += (Math.random()*2-1)*0.002;
+        guy.triangle_vertices[1] += (Math.random()*2-1)*0.002;
         guy.draw_everything(guy.gl, guy.vertexCoords_array, guy.triangle_vertices, guy.objColor, guy.texture);
 
     }
