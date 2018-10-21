@@ -64,9 +64,13 @@ function OpenglTrianglePainter() {
 
         // Gives access to variables defined inside the shaders:
         this.refs = {
+
             a_triangleCorner_vertexPosition2d: gl.getAttribLocation(shaderProgram, 'a_triangleCorner_vertexPosition2d'),
             a_textureVertex_position2d: gl.getAttribLocation(shaderProgram, 'textureCornerVectexCoord'),
+
+            u_brightness: gl.getUniformLocation(shaderProgram, "uBrightnessColour"),
             uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
+
         };
 
         console.log(this.refs);
@@ -153,8 +157,8 @@ function OpenglTrianglePainter() {
 
         // feed one uniform (not array)
         // uniform3f() must be called after useProgram(). This is necessary for all "uniform"s?
-        var u_brightness = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
-        gl.uniform3f(u_brightness, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
+        //var u_brightness = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
+        gl.uniform3f(this.refs.u_brightness, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
 
         // How to feed a texture:
         gl.activeTexture(gl.TEXTURE0);   // Tell WebGL we want to affect texture unit 0
