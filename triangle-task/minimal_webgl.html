@@ -96,9 +96,10 @@
         if (now - accum > WAIT_MSEC) {
             //console.log("next frame", now);
             //accum = accum + 1000;
-            render_rate_limited(now);
+            //render_rate_limited(now);
             accum = now;
         }
+        render_rate_limited(now);
         requestAnimationFrame(render);
     }
     function buildShader(gl, type, source) {
