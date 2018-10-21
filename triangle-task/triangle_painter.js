@@ -26,11 +26,7 @@ function OpenglTrianglePainter() {
         //  VERTEX shader
         //***************************************
 
-        //code 1
         attribute vec2 a_triangleCorner_vertexPosition2d;
-        // code 2
-        //attribute vec4 aVertexPosition;
-
         attribute vec2 textureCornerVectexCoord;
         varying highp vec2 vTextureCoord;
 
@@ -47,11 +43,11 @@ function OpenglTrianglePainter() {
         //  FRAGMENT shader
         //***************************************
         precision mediump float;
-        uniform vec3 uBrightnessColour;
 
+        uniform vec3 uBrightnessColour;
+        uniform sampler2D uSampler;
         // varying = interpolated
         varying highp vec2 vTextureCoord;
-        uniform sampler2D uSampler;
 
         void main() {
             gl_FragColor = texture2D(uSampler, vTextureCoord) + vec4(uBrightnessColour, 0.0);
