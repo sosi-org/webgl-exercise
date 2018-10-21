@@ -94,14 +94,14 @@ function OpenglTrianglePainter() {
         gl.enableVertexAttribArray(attrib_index);
     };
 
-    this.draw_everything = function (gl, vertexCoords_array, triangle_vertices, objColor, texture)
+    this.draw_everything = function (gl, vertexCoords_array, triangle_vertices, brightnessBoost, texture)
     {
         var buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);  // Set this buffer as the current one for the next buffer operations
         gl.bufferData(gl.ARRAY_BUFFER, vertexCoords_array, gl.STATIC_DRAW);
 
         var sh_color = gl.getUniformLocation(this.shaderProgram, "u_color");
-        gl.uniform3f(sh_color, objColor[0], objColor[1], objColor[2]);
+        gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
 
         //gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)

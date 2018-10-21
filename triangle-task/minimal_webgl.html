@@ -64,7 +64,7 @@ var guy = new OpenglTrianglePainter();
         //var coordDimensions=2;
 
         // not used
-       guy.objColor = [0., 0., 0.]; //[0.333/10, 0.666/10, 0.999/10];
+       guy.brightnessBoost = [0., 0., 0.]; //[0.333/10, 0.666/10, 0.999/10];
        // not used!
        guy.vertexCoords_array = new Float32Array([
            -0.5, -0.5,
@@ -83,7 +83,7 @@ var guy = new OpenglTrianglePainter();
            0.1,  -0.1,
        ]);
 
-        guy.draw_everything(gl, guy.vertexCoords_array, guy.triangle_vertices, guy.objColor, guy.texture);
+        guy.draw_everything(gl, guy.vertexCoords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
         requestAnimationFrame(render);
 
     }
@@ -93,9 +93,9 @@ var guy = new OpenglTrianglePainter();
         guy.triangle_vertices[0] += (Math.random()*2-1)*0.002;
         guy.triangle_vertices[1] += (Math.random()*2-1)*0.002;
 
-        guy.objColor[0] = Math.sin(time*0.001 * 2)*1 - 0.5;
-        if (guy.objColor[0] < 0.) guy.objColor[0] = 0.
-        guy.draw_everything(guy.gl, guy.vertexCoords_array, guy.triangle_vertices, guy.objColor, guy.texture);
+        guy.brightnessBoost[0] = Math.sin(time*0.001 * 2)*1 - 0.5;
+        if (guy.brightnessBoost[0] < 0.) guy.brightnessBoost[0] = 0.
+        guy.draw_everything(guy.gl, guy.vertexCoords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
 
     }
 
@@ -250,7 +250,7 @@ var guy = new OpenglTrianglePainter();
       return (value & (value - 1)) == 0;
     }
 
-    //function drawObject(gl, shaderProgram, coordDimensions, objColor, vertexCoords_array) {
+    //function drawObject(gl, shaderProgram, coordDimensions, brightnessBoost, vertexCoords_array) {
     //}
 
     /*
