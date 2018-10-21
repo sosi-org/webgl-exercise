@@ -26,11 +26,11 @@ var guy = new OpenglTrianglePainter();
 
     function make_buffer(gl, textureCoordinates)
     {
-        const textureCoordBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);   // Set this buffer as the current one
         //const textureCoordinates = ;
         gl.bufferData(gl.ARRAY_BUFFER, textureCoordinates,  gl.STATIC_DRAW);
-        return textureCoordBuffer;
+        return buffer;
     }
 
     function main()
@@ -45,25 +45,10 @@ var guy = new OpenglTrianglePainter();
         }
 
 
-
-
-        /*
-        const my_texture = loadTexture(gl, './images/painting.gif');
-        console.log(my_texture);
-        */
-
-
-        //var textureCoordBuffer = texture__textureCoordBuffer(gl).textureCoordBuffer;
-
-
-
-
-
-
         var texture_ = loadTexture2(gl, './images/painting.gif');
         //var coordDimensions=2;
 
-        // not used
+
        guy.brightnessBoost = [0., 0., 0.]; //[0.333/10, 0.666/10, 0.999/10];
        // not used!
        guy.vertexCoords_array = new Float32Array([
@@ -195,54 +180,6 @@ var guy = new OpenglTrianglePainter();
         });
         return texture1;
     }
-
-
-
-    /*
-    not used:
-    function loadTexture(gl, url) {
-
-      const texture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-
-
-      const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
-      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-                    width, height, border, srcFormat, srcType,
-                    pixel);
-
-
-      console.log(texture);
-      return texture;
-    }
-    */
-/*
-    function texture__textureCoordBuffer(gl)
-    {
-
-
-          return {
-            //position: positionBuffer,
-            textureCoord: textureCoordBuffer,
-            //indices: indexBuffer,
-          };
-    }
-    */
-
-    /*
-    function texture_coords(gl, textureCoordBuffer, this.refs)
-    {
-        const num = 2; // every coordinate composed of 2 values
-        const type = gl.FLOAT; // the data in the buffer is 32 bit float
-        const normalize = false; // don't normalize
-        const stride = 0; // how many bytes to get from one set to the next
-        const offset = 0; // how many bytes inside the buffer to start from
-        gl.bindBuffer(gl.ARRAY_BUFFER,  textureCoordBuffer);
-        gl.vertexAttribPointer(this.refs.attribLocations.textureCoord, num, type, normalize, stride, offset);
-        gl.enableVertexAttribArray(this.refs.attribLocations.textureCoord);
-    }
-    */
-
 
 
 

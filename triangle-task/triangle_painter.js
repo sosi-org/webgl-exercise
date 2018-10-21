@@ -96,12 +96,17 @@ function OpenglTrianglePainter() {
 
     this.draw_everything = function (gl, vertexCoords_array, triangle_vertices, brightnessBoost, texture)
     {
-        var buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);  // Set this buffer as the current one for the next buffer operations
-        gl.bufferData(gl.ARRAY_BUFFER, vertexCoords_array, gl.STATIC_DRAW);
 
+        /*
+        var textureCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);  // Set this buffer as the current one for the next buffer operations
+        gl.bufferData(gl.ARRAY_BUFFER, vertexCoords_array, gl.STATIC_DRAW);
+        */
+        /*
+        // no program bound
         var sh_color = gl.getUniformLocation(this.shaderProgram, "u_color");
         gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
+        */
 
         //gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
@@ -128,7 +133,7 @@ function OpenglTrianglePainter() {
 
 
 
-        textureCoordBuffer = make_buffer(gl, new Float32Array([
+        let textureCoordBuffer = make_buffer(gl, new Float32Array([
                         0.0,  0.0,
                         1.0,  0.0,
                         1.0,  1.0,
@@ -146,6 +151,10 @@ function OpenglTrianglePainter() {
 
         gl.useProgram(this.shaderProgram);
 
+        // uniform3f() must be called after useProgram()
+        var sh_color = gl.getUniformLocation(this.shaderProgram, "u_color");
+        gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
+
 
         // Tell WebGL we want to affect texture unit 0
         gl.activeTexture(gl.TEXTURE0);
@@ -162,6 +171,3 @@ function OpenglTrianglePainter() {
         }
     }; // draw_everything
 };
-
-
-console.log("hi");
