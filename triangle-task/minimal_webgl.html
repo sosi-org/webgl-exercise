@@ -39,8 +39,6 @@
             varying highp vec2 vTextureCoord;
 
             void main() {
-                // gl_Position = vec4(a_position, 0.0, 1.0);
-                // gl_Position = uProjectionMatrix * uModelViewMatrix * (vec4(a_position, 0.0, 1.0));
                 gl_Position =  (vec4(a_position, 0.0, 1.0));
                 vTextureCoord = aTextureCoord;
             }
@@ -56,25 +54,10 @@
             uniform sampler2D uSampler;
 
             void main() {
-                //gl_FragColor = vec4(u_color, 1.0);
                 gl_FragColor = texture2D(uSampler, vTextureCoord);
             }
             `
         );
-
-
-
-        //gl.useProgram(shaderProgram);
-
-        var coordDimensions=2;
-        var objColor=[0.333, 0.666, 0.999];
-        var vertexCoords_array = new Float32Array([
-            -0.5, -0.5,
-             0.5, -0.5,
-            -0.5,  0.5,
-             //0.5,  0.5
-        ]);
-
 
         const pinfo = {
           //program: shaderProgram,
@@ -83,15 +66,11 @@
             textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
           },
           uniformLocations: {
-            //projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-            //modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
             uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
           },
         };
 
         console.log(pinfo);
-
-
 
         const my_texture = loadTexture(gl, './painting.gif');
 
@@ -242,10 +221,12 @@
       const border = 0;
       const srcFormat = gl.RGBA;
       const srcType = gl.UNSIGNED_BYTE;
+      /*
       const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
       gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                     width, height, border, srcFormat, srcType,
                     pixel);
+    */
 
       const image = new Image();
       image.onload = function() {
@@ -261,9 +242,12 @@
            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         }
+        console.log(" loaded",texture);
+
       };
       image.src = url;
 
+      console.log(texture);
       return texture;
     }
 
