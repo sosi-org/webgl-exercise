@@ -101,7 +101,7 @@ function Glbal() {
         this.gl = gl;
     }
 
-    this.draw_everything = function (gl, vertexCoords_array, objColor, texture)
+    this.draw_everything = function (gl, vertexCoords_array, triangle_vertices, objColor, texture)
         {
             var buffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);  // Set this buffer as the current one for the next buffer operations
@@ -159,12 +159,7 @@ function Glbal() {
 
 
             // MISSING PART!
-            var position_attrib_buffer = make_buffer(gl, new Float32Array([
-                //2 x vertices. Like a queue.
-                -0.3,  0.3,
-                0.3,  0.2,
-                0.1,  -0.1,
-            ]));
+            var position_attrib_buffer = make_buffer(gl, triangle_vertices);
 
             feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_position2d, position_attrib_buffer, 2);
 
@@ -243,15 +238,21 @@ var guy = new Glbal();
        guy.texture = texture_;
 
        guy.init(gl);
+       guy.triangle_vertices = new Float32Array([
+           //2 x vertices. Like a queue.
+           -0.3,  0.3,
+           0.3,  0.2,
+           0.1,  -0.1,
+       ]);
 
-        guy.draw_everything(gl, guy.vertexCoords_array, guy.objColor, guy.texture);
+        guy.draw_everything(gl, guy.vertexCoords_array, guy.triangle_vertices, guy.objColor, guy.texture);
         requestAnimationFrame(render);
 
     }
 
     function render_rate_limited() {
-        guy.vertexCoords_array[0] += 0.5;
-        guy.draw_everything(guy.gl, guy.vertexCoords_array, guy.objColor, guy.texture);
+        guy.triangle_vertices[0] += 0.002;
+        guy.draw_everything(guy.gl, guy.vertexCoords_array, guy.triangle_vertices, guy.objColor, guy.texture);
 
     }
 
