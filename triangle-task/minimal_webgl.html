@@ -19,34 +19,12 @@
 
     window.onload = main;
 
-    var glbal = {}
+    var glbal = function(){
 
-    function main()
-    {
-        // Get the WebGL context from the canvas
-        try {
-            var gl = document.getElementById("glcanvas").getContext("webgl");
-        } catch(ex) {
-            console.log("Unable to initialize WebGL. Your browser may not support it.");
-            var gl = null;
-            alert('Sorry, no WebGL');
-        }
+    };
 
 
-
-
-
-
-
-
-        function make_buffer(gl, textureCoordinates)
-        {
-            const textureCoordBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-            //const textureCoordinates = ;
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),  gl.STATIC_DRAW);
-            return textureCoordBuffer;
-        }
+    glbal.init = function(gl) {
 
         /*
             uniform: variables that change per "primitive". Shader input. Both vertex or fragment shaders. Read-only.
@@ -104,8 +82,9 @@
             VERTEX_SHADER,
             FRAGMENT_SHADER
         );
+        this.shaderProgram = shaderProgram;
 
-        const prefs = {
+        this.refs = {
           //program: shaderProgram,
           attribLocations: {
             // for need for 'vTextureCoord'
@@ -118,21 +97,10 @@
           },
         };
 
-        console.log(prefs);
+        console.log(this.refs);
+    }
 
-
-        /*
-        const my_texture = loadTexture(gl, './painting.gif');
-        console.log(my_texture);
-        */
-
-
-        //var textureCoordBuffer = texture__textureCoordBuffer(gl).textureCoordBuffer;
-
-
-
-
-        function do_things(gl, vertexCoords_array, objColor, texture)
+    glbal.do_things = function (gl, vertexCoords_array, objColor, texture)
         {
             var buffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);// Set this buffer as the current one for the next buffer operations
@@ -163,7 +131,7 @@
                 // For standard JavaScript arrays both are set to zero to indicate tight packing and no offset.
                 gl.vertexAttribPointer(sh_position, coordDimensions, gl.FLOAT, false, 0, 0);
             */
-            var sh_color = gl.getUniformLocation(shaderProgram, "u_color");
+            var sh_color = gl.getUniformLocation(glbal.shaderProgram, "u_color");
             gl.uniform3f(sh_color, objColor[0], objColor[1], objColor[2]);
 
             //gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
@@ -193,7 +161,7 @@
 
             function  feed_attrib_with_filled_buffer(gl, attrib_index, attrib_buffer, num_per_vertex)
             {
-                //texture_coords(gl, textureCoordBuffer, prefs);
+                //texture_coords(gl, textureCoordBuffer, this.refs);
                 //const num_per_vertex = 2; // every coordinate composed of 2 values
                 const type = gl.FLOAT; // the data in the buffer is 32 bit float
                 const normalize = false; // don't normalize
@@ -211,7 +179,7 @@
                             0.0,  1.0,
                         ]);
 
-            feed_attrib_with_filled_buffer(gl, prefs.attribLocations.textureCoord, textureCoordBuffer, 2)
+            feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.textureCoord, textureCoordBuffer, 2)
 
 
             // MISSING PART!
@@ -222,10 +190,10 @@
                 0.1,  0.1,
             ]);
 
-            feed_attrib_with_filled_buffer(gl, prefs.attribLocations.a_position2d, position_attrib_buffer, 2);
+            feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_position2d, position_attrib_buffer, 2);
 
 
-            gl.useProgram(shaderProgram);
+            gl.useProgram(this.shaderProgram);
 
 
             // Tell WebGL we want to affect texture unit 0
@@ -233,7 +201,7 @@
             // Bind the texture to texture unit 0
             gl.bindTexture(gl.TEXTURE_2D, texture);
             // Tell the shader we bound the texture to texture unit 0
-            gl.uniform1i(prefs.uniformLocations.uSampler, 0);
+            gl.uniform1i(this.refs.uniformLocations.uSampler, 0);
 
             {
               const vertexCount = 3; ////36;
@@ -243,7 +211,41 @@
             }
         }; // do_things
 
-        glbal.do_things = do_things;
+
+    function make_buffer(gl, textureCoordinates)
+    {
+        const textureCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+        //const textureCoordinates = ;
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),  gl.STATIC_DRAW);
+        return textureCoordBuffer;
+    }
+
+    function main()
+    {
+        // Get the WebGL context from the canvas
+        try {
+            var gl = document.getElementById("glcanvas").getContext("webgl");
+        } catch(ex) {
+            console.log("Unable to initialize WebGL. Your browser may not support it.");
+            var gl = null;
+            alert('Sorry, no WebGL');
+        }
+
+
+
+
+        /*
+        const my_texture = loadTexture(gl, './painting.gif');
+        console.log(my_texture);
+        */
+
+
+        //var textureCoordBuffer = texture__textureCoordBuffer(gl).textureCoordBuffer;
+
+
+
+
 
 
         var texture_ = loadTexture2(gl, './painting.gif');
@@ -258,20 +260,22 @@
        glbal.gl = gl;
        glbal.texture = texture_;
 
-        do_things(gl, glbal.vertexCoords_array, glbal.objColor, glbal.texture);
+       glbal.init(gl);
+
+        glbal.do_things(gl, glbal.vertexCoords_array, glbal.objColor, glbal.texture);
         requestAnimationFrame(render);
 
     }
 
     function render_rate_limited() {
-        glbal.vertexCoords_array[1] += 0.5;
+        glbal.vertexCoords_array[0] += 0.5;
         glbal.do_things(glbal.gl, glbal.vertexCoords_array, glbal.objColor, glbal.texture);
 
     }
 
     var accum = 0;
     function render(now) {
-        WAIT_MSEC = 1000 / 4;
+        WAIT_MSEC = 10; //1000 / 4;
         if (now - accum > WAIT_MSEC) {
             console.log("next frame", now);
             //accum = accum + 1000;
@@ -339,10 +343,10 @@
         const srcFormat = gl.RGBA;
         const srcType = gl.UNSIGNED_BYTE;
 
-        const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+        const preview_single_pixel = new Uint8Array([255, 0, 0, 255]);  // opaque blue
         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                       width, height, border, srcFormat, srcType,
-                      pixel);
+                      preview_single_pixel);
 
 
         load_image(url, function() {
@@ -400,7 +404,7 @@
     */
 
     /*
-    function texture_coords(gl, textureCoordBuffer, prefs)
+    function texture_coords(gl, textureCoordBuffer, this.refs)
     {
         const num = 2; // every coordinate composed of 2 values
         const type = gl.FLOAT; // the data in the buffer is 32 bit float
@@ -408,8 +412,8 @@
         const stride = 0; // how many bytes to get from one set to the next
         const offset = 0; // how many bytes inside the buffer to start from
         gl.bindBuffer(gl.ARRAY_BUFFER,  textureCoordBuffer);
-        gl.vertexAttribPointer(prefs.attribLocations.textureCoord, num, type, normalize, stride, offset);
-        gl.enableVertexAttribArray(prefs.attribLocations.textureCoord);
+        gl.vertexAttribPointer(this.refs.attribLocations.textureCoord, num, type, normalize, stride, offset);
+        gl.enableVertexAttribArray(this.refs.attribLocations.textureCoord);
     }
     */
 
