@@ -22,36 +22,38 @@ function OpenglTrianglePainter() {
 
         const VERTEX_SHADER =
         `
-        //***************************************
-        //  VERTEX shader
-        //***************************************
+            //***************************************
+            //  VERTEX shader
+            //***************************************
 
-        attribute vec2 a_triangleCorner_vertexPosition2d;
-        attribute vec2 textureCornerVectexCoord;
-        varying highp vec2 vTextureCoord;
+            attribute vec2 a_triangleCorner_vertexPosition2d;
+            attribute vec2 textureCornerVectexCoord;
 
-        void main() {
-            gl_Position =  (vec4(a_triangleCorner_vertexPosition2d, 0.0, 1.0));
-            vTextureCoord = textureCornerVectexCoord;
-        }
+            varying highp vec2 vTextureCoord;
+            //varying = will be interpolated. output.
+
+            void main() {
+                gl_Position =  (vec4(a_triangleCorner_vertexPosition2d, 0.0, 1.0));
+                vTextureCoord = textureCornerVectexCoord;
+            }
         `;
 
         const FRAGMENT_SHADER =
-         // fragment shader:
         `
-        //***************************************
-        //  FRAGMENT shader
-        //***************************************
-        precision mediump float;
+            //***************************************
+            //  FRAGMENT shader
+            //***************************************
+            precision mediump float;
 
-        uniform vec3 uBrightnessColour;
-        uniform sampler2D uSampler;
-        // varying = interpolated
-        varying highp vec2 vTextureCoord;
+            uniform vec3 uBrightnessColour;
+            uniform sampler2D uSampler;
 
-        void main() {
-            gl_FragColor = texture2D(uSampler, vTextureCoord) + vec4(uBrightnessColour, 0.0);
-        }
+            // varying = interpolated. input.
+            varying highp vec2 vTextureCoord;
+
+            void main() {
+                gl_FragColor = texture2D(uSampler, vTextureCoord) + vec4(uBrightnessColour, 0.0);
+            }
         `
 
         var shaderProgram = buildShaderProgram(gl,
@@ -111,11 +113,6 @@ function OpenglTrianglePainter() {
     this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture)
     {
 
-        /*
-        var textureCoordBuffer = make_vertex_buffer(vertexCoords_array);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
-        */
-
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -173,14 +170,12 @@ function OpenglTrianglePainter() {
           const offset = 0;
           gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         }
+
+        /*
+        var textureCoordBuffer = make_vertex_buffer(vertexCoords_array);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
+        */
+
     }; // draw_textured_triangle
-
-
-    /*
-    // Not good: single responsibility.
-    this.draw_everything = function(gl){
-        guy.draw_textured_triangle(gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
-    }
-    */
 
 };
