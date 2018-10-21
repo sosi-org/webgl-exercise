@@ -81,7 +81,7 @@
                    ]);
 
         //guy.draw_everything(gl);
-        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture, global_globjs.bg_texture);
+        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture);
 
         requestAnimationFrame(render);
 
@@ -99,7 +99,7 @@
             global_state.brightnessBoost[0] = 0.
 
         //guy.draw_everything(guy.gl);
-        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture, global_globjs.bg_texture);
+        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, global_globjs.texture);
 
     }
 

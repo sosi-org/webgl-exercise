@@ -28,16 +28,16 @@ function OpenglTrianglePainter() {
 
             attribute vec2 a_triangleCorner_vertexPosition2d;
             attribute vec2 textureCornerVectexCoord;
-            attribute vec2 a_BGRectCornerXY;
+            //attribute vec2 a_BGRectCornerXY;
 
             varying highp vec2 vTextureCoord;
-            varying highp vec2 v_BGTextureXY;
+            //varying highp vec2 v_BGTextureXY;
             //varying = will be interpolated. output.
 
             void main() {
                 gl_Position =  (vec4(a_triangleCorner_vertexPosition2d, 0.0, 1.0));
                 vTextureCoord = textureCornerVectexCoord;
-                v_BGTextureXY = a_BGRectCornerXY;
+                //v_BGTextureXY = a_BGRectCornerXY;
             }
         `;
 
@@ -50,17 +50,17 @@ function OpenglTrianglePainter() {
 
             uniform vec3 uBrightnessColour;
             uniform sampler2D uSampler;
-            uniform sampler2D uBGSampler;
+            //uniform sampler2D uBGSampler;
 
             // varying = interpolated. input.
             varying highp vec2 vTextureCoord;
-            varying highp vec2 v_BGTextureXY;
+            //varying highp vec2 v_BGTextureXY;
 
             void main() {
                 gl_FragColor =
-                    texture2D(uSampler, vTextureCoord) * 0.5
+                    texture2D(uSampler, vTextureCoord)
                     + vec4(uBrightnessColour, 0.0)
-                    + texture2D(uBGSampler, v_BGTextureXY) * 0.5
+                    //+ texture2D(uBGSampler, v_BGTextureXY) * 0.5
                     ;
             }
         `
@@ -76,11 +76,11 @@ function OpenglTrianglePainter() {
 
             a_triangleCorner_vertexPosition2d: gl.getAttribLocation(shaderProgram, 'a_triangleCorner_vertexPosition2d'),
             a_textureVertex_position2d: gl.getAttribLocation(shaderProgram, 'textureCornerVectexCoord'),
-            a_BGRectCornerXY: gl.getAttribLocation(shaderProgram, 'a_BGRectCornerXY'),
+            //a_BGRectCornerXY: gl.getAttribLocation(shaderProgram, 'a_BGRectCornerXY'),
 
             u_brightness: gl.getUniformLocation(shaderProgram, "uBrightnessColour"),
             uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
-            uBGSampler: gl.getUniformLocation(shaderProgram, 'uBGSampler'),
+            //uBGSampler: gl.getUniformLocation(shaderProgram, 'uBGSampler'),
 
             //v_BGTextureXY
 
