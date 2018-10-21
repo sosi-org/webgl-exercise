@@ -127,11 +127,17 @@ function OpenglTrianglePainter() {
         gl.enableVertexAttribArray(attrib_index);
     };
 
-    this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture, texture2)
+    this.clear = function (gl)
     {
-
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
         gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+
+    this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture, num_vertices)
+    {
+
+        //gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
+        //gl.clear(gl.COLOR_BUFFER_BIT);
 
 
         /*
@@ -146,11 +152,21 @@ function OpenglTrianglePainter() {
               modelViewMatrix);
         */
 
+
         // =====================
         // Feed attributes
         // =====================
         // Feed indices (IBO)
-        const indices = [ 0,  1,  2,  ];
+        //const indices = [ 0,  1,  2,     2,1,3];
+        var indices_;
+        if (num_vertices == 6) {
+            indices_ = [      1, 2,3,   0,  1, 3,];
+        }else if (num_vertices == 3) {
+            indices_ = [      0,1, 2,];
+        } else {
+            console.error("Can only be 3 or 6.");
+        }
+        const indices = indices_;
         make_index_buffer(gl, indices);
 
         const bg_rect = new Float32Array([0.,0., 1.,0.,  1.,1., 0.,1.]);
@@ -179,23 +195,29 @@ function OpenglTrianglePainter() {
         gl.uniform3f(this.refs.u_brightness, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
 
         // How to feed a texture:
-        gl.activeTexture(gl.TEXTURE0);   // Tell WebGL we want to affect texture unit 0
+        tx = [gl.TEXTURE0, gl.TEXTURE1];
+        const tindex = 0;
+        gl.activeTexture(tx[tindex]);   // Tell WebGL we want to affect texture unit 0
         gl.bindTexture(gl.TEXTURE_2D, texture);        // Bind the texture to texture unit 0
-        gl.uniform1i(this.refs.uSampler, 0);        // Tell the shader we bound the texture to texture unit 0
-
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, texture2);
-        gl.uniform1i(this.refs.uBGSampler, 1);
+        gl.uniform1i(this.refs.uSampler, tindex);        // Tell the shader we bound the texture to texture unit 0
 
 
         // =====================
         // now, go.
         // =====================
+        if (true)
         {
-          const vertexCount = 3;
+          const vertexCount = num_vertices; //3 //3+3;
           const type = gl.UNSIGNED_SHORT;
           const offset = 0;
           gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+        }
+        if (false) {
+            //const vertexCount = 4;
+            const vertexCount = 4;
+            const type = gl.UNSIGNED_SHORT;
+            const offset = 0;
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCount);
         }
 
         /*
