@@ -97,40 +97,17 @@ function Glbal() {
         };
 
         console.log(this.refs);
+
+        this.gl = gl;
     }
 
-    this.do_things = function (gl, vertexCoords_array, objColor, texture)
+    this.draw_everything = function (gl, vertexCoords_array, objColor, texture)
         {
             var buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);// Set this buffer as the current one for the next buffer operations
-            // Fill the buffer with the triangles.
-            // STATIC_DRAW states that we are only going to write to this buffer very infrequently
-            // so the system can optimise for this situation.
-            // It doesn't stop us from writing to the buffer again,
-            // but it might not be as efficient.
-            // See http://stackoverflow.com/q/16462517 for more details.
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);  // Set this buffer as the current one for the next buffer operations
             gl.bufferData(gl.ARRAY_BUFFER, vertexCoords_array, gl.STATIC_DRAW);
-            // Get a reference to the "a_position" variable of the vertex shader,
-            // which we'll connect with the 3D vertex data now stored in the current WebGL buffer.
-            /*
-                var sh_position = gl.getAttribLocation(shaderProgram, "a_position");
-                // Enable the a_position vertex attribute for rendering
-                // All client-side capabilities are disabled by default,
-                // including all vertex attribute arrays.
-                gl.enableVertexAttribArray(sh_position);
 
-                // Specify the data structure of the array that will be used to store the vertex position data.
-                // The parameters indicate that the vertexPos attribute is:
-                // - a list of elements with 2 components each (2D vertices)
-                // - of type gl.Float
-                // - and they should be un-normalized.
-                // The final two parameters are rarely used.
-                // The first specifies the stride of the data i.e. the amount of storage allocated to each element
-                // and the second specifies the offset i.e. where the data starts.
-                // For standard JavaScript arrays both are set to zero to indicate tight packing and no offset.
-                gl.vertexAttribPointer(sh_position, coordDimensions, gl.FLOAT, false, 0, 0);
-            */
-            var sh_color = gl.getUniformLocation(glbal.shaderProgram, "u_color");
+            var sh_color = gl.getUniformLocation(this.shaderProgram, "u_color");
             gl.uniform3f(sh_color, objColor[0], objColor[1], objColor[2]);
 
             //gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
@@ -171,23 +148,23 @@ function Glbal() {
                 gl.enableVertexAttribArray(attrib_index);
             };
 
-            textureCoordBuffer = make_buffer(gl, [
+            textureCoordBuffer = make_buffer(gl, new Float32Array([
                             0.0,  0.0,
                             1.0,  0.0,
                             1.0,  1.0,
                             0.0,  1.0,
-                        ]);
+                        ]));
 
             feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.textureCoord, textureCoordBuffer, 2)
 
 
             // MISSING PART!
-            var position_attrib_buffer = make_buffer(gl, [
+            var position_attrib_buffer = make_buffer(gl, new Float32Array([
                 //2 x vertices. Like a queue.
-                0.3,  0.3,
-                0.1,  0.2,
-                0.1,  0.1,
-            ]);
+                -0.3,  0.3,
+                0.3,  0.2,
+                0.1,  -0.1,
+            ]));
 
             feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_position2d, position_attrib_buffer, 2);
 
@@ -208,17 +185,17 @@ function Glbal() {
               const offset = 0;
               gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
             }
-        }; // do_things
+        }; // draw_everything
 };
 
-var glbal = new Glbal();
+var guy = new Glbal();
 
     function make_buffer(gl, textureCoordinates)
     {
         const textureCoordBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
         //const textureCoordinates = ;
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),  gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, textureCoordinates,  gl.STATIC_DRAW);
         return textureCoordBuffer;
     }
 
@@ -252,28 +229,29 @@ var glbal = new Glbal();
         var texture_ = loadTexture2(gl, './images/painting.gif');
         //var coordDimensions=2;
 
-        console.log("2", glbal);
-
-       glbal.objColor=[0.333, 0.666, 0.999];
-       glbal.vertexCoords_array = new Float32Array([
+        // not used
+       guy.objColor=[0.333, 0.666, 0.999];
+       guy.vertexCoords_array = new Float32Array([
            -0.5, -0.5,
             0.5, -0.5,
            -0.5,  0.5,
             //0.5,  0.5
        ]);
-       glbal.gl = gl;
-       glbal.texture = texture_;
 
-       glbal.init(gl);
+       guy.vertexCoords_array
+       //guy.gl = gl;
+       guy.texture = texture_;
 
-        glbal.do_things(gl, glbal.vertexCoords_array, glbal.objColor, glbal.texture);
+       guy.init(gl);
+
+        guy.draw_everything(gl, guy.vertexCoords_array, guy.objColor, guy.texture);
         requestAnimationFrame(render);
 
     }
 
     function render_rate_limited() {
-        glbal.vertexCoords_array[0] += 0.5;
-        glbal.do_things(glbal.gl, glbal.vertexCoords_array, glbal.objColor, glbal.texture);
+        guy.vertexCoords_array[0] += 0.5;
+        guy.draw_everything(guy.gl, guy.vertexCoords_array, guy.objColor, guy.texture);
 
     }
 
@@ -281,7 +259,7 @@ var glbal = new Glbal();
     function render(now) {
         WAIT_MSEC = 10; //1000 / 4;
         if (now - accum > WAIT_MSEC) {
-            console.log("next frame", now);
+            //console.log("next frame", now);
             //accum = accum + 1000;
             render_rate_limited();
             accum = now;
