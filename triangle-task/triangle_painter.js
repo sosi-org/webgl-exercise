@@ -64,7 +64,7 @@ function OpenglTrianglePainter() {
           //attribLocations: {
             // for need for 'vTextureCoord'
             a_triangleCorner_vertexPosition2d: gl.getAttribLocation(shaderProgram, 'a_triangleCorner_vertexPosition2d'),
-            textureCoord: gl.getAttribLocation(shaderProgram, 'textureCornerVectexCoord'),
+            a_textureVertexCoord: gl.getAttribLocation(shaderProgram, 'textureCornerVectexCoord'),
           //},
           //uniformLocations: {
             uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
@@ -147,7 +147,7 @@ function OpenglTrianglePainter() {
 
 
         let textureCoordBuffer = make_vertex_buffer(gl, texture_coords_array);
-        feed_vertex_attrib_with_filled_buffer(gl, this.refs.textureCoord, textureCoordBuffer, 2)
+        feed_vertex_attrib_with_filled_buffer(gl, this.refs.a_textureVertexCoord, textureCoordBuffer, 2)
 
 
         // MISSING PART!
