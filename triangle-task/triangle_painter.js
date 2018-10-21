@@ -78,7 +78,8 @@ function OpenglTrianglePainter() {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         //const indices = [ 0,  1,  2,  ];
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
+        // not used
+        // return indexBuffer;
     }
 
     // private
@@ -114,11 +115,6 @@ function OpenglTrianglePainter() {
         var textureCoordBuffer = make_vertex_buffer(vertexCoords_array);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
         */
-        /*
-        // no program bound
-        var sh_color = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
-        gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
-        */
 
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -136,14 +132,13 @@ function OpenglTrianglePainter() {
               modelViewMatrix);
         */
 
+        // Feed indices
         const indices = [ 0,  1,  2,  ];
         make_index_buffer(gl, indices);
 
-
+        // Feed vertices
         let textureCoordBuffer = make_vertex_buffer(gl, texture_coords_array);
         feed_vertex_attrib_with_filled_buffer(gl, this.refs.a_textureVertex_position2d, textureCoordBuffer, 2)
-
-
         // MISSING PART!
         var position_attrib_buffer = make_vertex_buffer(gl, triangle_vertices);
         feed_vertex_attrib_with_filled_buffer(gl, this.refs.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
@@ -151,10 +146,10 @@ function OpenglTrianglePainter() {
 
         gl.useProgram(this.shaderProgram);
 
+        // feed the uniforms
         // uniform3f() must be called after useProgram()
-        var sh_color = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
-        gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
-
+        var u_brightness = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
+        gl.uniform3f(u_brightness, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
 
         // Tell WebGL we want to affect texture unit 0
         gl.activeTexture(gl.TEXTURE0);
@@ -164,7 +159,7 @@ function OpenglTrianglePainter() {
         gl.uniform1i(this.refs.uSampler, 0);
 
         {
-          const vertexCount = 3; ////36;
+          const vertexCount = 3;
           const type = gl.UNSIGNED_SHORT;
           const offset = 0;
           gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
