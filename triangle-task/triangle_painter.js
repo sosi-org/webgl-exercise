@@ -27,16 +27,16 @@ function OpenglTrianglePainter() {
         //***************************************
 
         //code 1
-        attribute vec2 a_position2d;
+        attribute vec2 a_triangleCorner_vertexPosition2d;
         // code 2
         //attribute vec4 aVertexPosition;
 
-        attribute vec2 aTextureCoord;
+        attribute vec2 textureCornerVectexCoord;
         varying highp vec2 vTextureCoord;
 
         void main() {
-            gl_Position =  (vec4(a_position2d, 0.0, 1.0));
-            vTextureCoord = aTextureCoord;
+            gl_Position =  (vec4(a_triangleCorner_vertexPosition2d, 0.0, 1.0));
+            vTextureCoord = textureCornerVectexCoord;
         }
         `;
 
@@ -68,8 +68,8 @@ function OpenglTrianglePainter() {
           attribLocations: {
             // for need for 'vTextureCoord'
             //vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-            a_position2d: gl.getAttribLocation(shaderProgram, 'a_position2d'),
-            textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+            a_triangleCorner_vertexPosition2d: gl.getAttribLocation(shaderProgram, 'a_triangleCorner_vertexPosition2d'),
+            textureCoord: gl.getAttribLocation(shaderProgram, 'textureCornerVectexCoord'),
           },
           uniformLocations: {
             uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
@@ -141,7 +141,7 @@ function OpenglTrianglePainter() {
         // MISSING PART!
         var position_attrib_buffer = make_buffer(gl, triangle_vertices);
 
-        feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_position2d, position_attrib_buffer, 2);
+        feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
 
 
         gl.useProgram(this.shaderProgram);
