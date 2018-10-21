@@ -78,7 +78,16 @@ function OpenglTrianglePainter() {
         //this.gl = gl;
     }
 
-    function  feed_attrib_with_filled_buffer(gl, attrib_index, attrib_buffer, num_per_vertex)
+    // private
+    function make_buffer(gl, floatCoordinates)
+    {
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);   // Set this buffer as the current one
+        gl.bufferData(gl.ARRAY_BUFFER, floatCoordinates,  gl.STATIC_DRAW);
+        return buffer;
+    }
+
+    function  feed_vertex_attrib_with_filled_buffer(gl, attrib_index, attrib_buffer, num_per_vertex)
     {
         //texture_coords(gl, textureCoordBuffer, this.refs);
         //const num_per_vertex = 2; // every coordinate composed of 2 values
@@ -86,7 +95,9 @@ function OpenglTrianglePainter() {
         const normalize = false; // don't normalize
         const stride = 0; // how many bytes to get from one set to the next
         const offset = 0; // how many bytes inside the buffer to start from
-        gl.bindBuffer(gl.ARRAY_BUFFER, attrib_buffer);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, attrib_buffer);  // not actually necessary
+
         gl.vertexAttribPointer(attrib_index, num_per_vertex, type, normalize, stride, offset);
         gl.enableVertexAttribArray(attrib_index);
     };
@@ -132,13 +143,13 @@ function OpenglTrianglePainter() {
 
         let textureCoordBuffer = make_buffer(gl, texture_coords_array);
 
-        feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.textureCoord, textureCoordBuffer, 2)
+        feed_vertex_attrib_with_filled_buffer(gl, this.refs.attribLocations.textureCoord, textureCoordBuffer, 2)
 
 
         // MISSING PART!
         var position_attrib_buffer = make_buffer(gl, triangle_vertices);
 
-        feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
+        feed_vertex_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
 
 
         gl.useProgram(this.shaderProgram);

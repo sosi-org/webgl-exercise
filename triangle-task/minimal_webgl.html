@@ -39,14 +39,6 @@
         return gl;
     }
 
-    function make_buffer(gl, textureCoordinates)
-    {
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);   // Set this buffer as the current one
-        //const textureCoordinates = ;
-        gl.bufferData(gl.ARRAY_BUFFER, textureCoordinates,  gl.STATIC_DRAW);
-        return buffer;
-    }
 
     function main()
     {
