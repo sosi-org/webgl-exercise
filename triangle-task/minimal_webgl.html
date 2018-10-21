@@ -18,6 +18,9 @@
     //     https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 
     window.onload = main;
+
+    var glbal = {}
+
     function main()
     {
         // Get the WebGL context from the canvas
@@ -129,8 +132,8 @@
 
 
 
-
-        function do_things(gl, vertexCoords_array, texture) {
+        function do_things(gl, vertexCoords_array, objColor, texture)
+        {
             var buffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);// Set this buffer as the current one for the next buffer operations
             // Fill the buffer with the triangles.
@@ -208,20 +211,6 @@
                             0.0,  1.0,
                         ]);
 
-            /*
-            (function(attrib_buffer, num_per_vertex)
-            {
-                //texture_coords(gl, textureCoordBuffer, prefs);
-                //const num_per_vertex = 2; // every coordinate composed of 2 values
-                const type = gl.FLOAT; // the data in the buffer is 32 bit float
-                const normalize = false; // don't normalize
-                const stride = 0; // how many bytes to get from one set to the next
-                const offset = 0; // how many bytes inside the buffer to start from
-                gl.bindBuffer(gl.ARRAY_BUFFER, attrib_buffer);
-                gl.vertexAttribPointer(prefs.attribLocations.textureCoord, num_per_vertex, type, normalize, stride, offset);
-                gl.enableVertexAttribArray(prefs.attribLocations.textureCoord);
-            })(textureCoordBuffer, 2);
-            */
             feed_attrib_with_filled_buffer(gl, prefs.attribLocations.textureCoord, textureCoordBuffer, 2)
 
 
@@ -233,19 +222,6 @@
                 0.1,  0.1,
             ]);
 
-            /*
-            (function(attrib_buffer, num_per_vertex)
-            {
-            //const num_per_vertex = 2; // every coordinate composed of 2 values
-            const type = gl.FLOAT; // the data in the buffer is 32 bit float
-            const normalize = false; // don't normalize
-            const stride = 0; // how many bytes to get from one set to the next
-            const offset = 0; // how many bytes inside the buffer to start from
-            gl.bindBuffer(gl.ARRAY_BUFFER, attrib_buffer);
-            gl.vertexAttribPointer(prefs.attribLocations.a_position2d, num_per_vertex, type, normalize, stride, offset);
-            gl.enableVertexAttribArray(prefs.attribLocations.a_position2d);
-            })(position_attrib_buffer, 2);
-            */
             feed_attrib_with_filled_buffer(gl, prefs.attribLocations.a_position2d, position_attrib_buffer, 2);
 
 
@@ -267,21 +243,43 @@
             }
         }; // do_things
 
+        glbal.do_things = do_things;
+
 
         var texture_ = loadTexture2(gl, './painting.gif');
-        var coordDimensions=2;
-       var objColor=[0.333, 0.666, 0.999];
-       var vertexCoords_array = new Float32Array([
+        //var coordDimensions=2;
+       glbal.objColor=[0.333, 0.666, 0.999];
+       glbal.vertexCoords_array = new Float32Array([
            -0.5, -0.5,
             0.5, -0.5,
            -0.5,  0.5,
             //0.5,  0.5
        ]);
-        do_things(gl, vertexCoords_array, texture_);
+       glbal.gl = gl;
+       glbal.texture = texture_;
 
+        do_things(gl, glbal.vertexCoords_array, glbal.objColor, glbal.texture);
+        requestAnimationFrame(render);
 
     }
 
+    function render_rate_limited() {
+        glbal.vertexCoords_array[1] += 0.5;
+        glbal.do_things(glbal.gl, glbal.vertexCoords_array, glbal.objColor, glbal.texture);
+
+    }
+
+    var accum = 0;
+    function render(now) {
+        WAIT_MSEC = 1000 / 4;
+        if (now - accum > WAIT_MSEC) {
+            console.log("next frame", now);
+            //accum = accum + 1000;
+            render_rate_limited();
+            accum = now;
+        }
+        requestAnimationFrame(render);
+    }
     function buildShader(gl, type, source) {
         var sh;
         if (type == "fragment")
