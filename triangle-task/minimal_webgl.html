@@ -10,6 +10,7 @@
     </canvas>
     <img  src="./painting.gif"/>
     <script>
+    'use strict;'
 
     // based on
     //      https://github.com/waldyrious/minimal-webgl/blob/gh-pages/index.xhtml
@@ -29,61 +30,85 @@
         }
 
 
+
+
+
+
+
+
+        function texture_coords_buffer()
+        {
+            const textureCoordBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+            const textureCoordinates = [
+                // Front
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+            ];
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),  gl.STATIC_DRAW);
+            return textureCoordBuffer;
+        }
+
+        /*
+            uniform: variables that change per "primitive". Shader input. Both vertex or fragment shaders. Read-only.
+                    Constant during: a "draw" call.
+            attribute: variables that may change per vertex. Used in: vertex shader (only). Is read-only. Is input.
+                    Vary from vertex to vertex. (per vertex)
+            varying: interpolated data shared. Vertex->Fragment. Vertex shader: output. Fragment shader: input.
+                    Not constant: vary from pixel to pixel (per pixel).
+
+            Pipeline: "via varying" or implicit.
+                    vertes shader -> other shaders -> fragment shader
+
+
+            [1] https://stackoverflow.com/questions/17537879/in-webgl-what-are-the-differences-between-an-attribute-a-uniform-and-a-varying
+        */
+
+        const VERTEX_SHADER =
+        `
+        //***************************************
+        //  VERTEX shader
+        //***************************************
+
+        //code 1
+        attribute vec2 a_position2d;
+        // code 2
+        //attribute vec4 aVertexPosition;
+
+        attribute vec2 aTextureCoord;
+        varying highp vec2 vTextureCoord;
+
+        void main() {
+            gl_Position =  (vec4(a_position2d, 0.0, 1.0));
+            vTextureCoord = aTextureCoord;
+        }
+        `;
+
+        const FRAGMENT_SHADER =
+         // fragment shader:
+        `
+        //***************************************
+        //  FRAGMENT shader
+        //***************************************
+        precision mediump float;
+        uniform vec3 u_color;
+
+        varying highp vec2 vTextureCoord;
+        uniform sampler2D uSampler;
+
+        void main() {
+            gl_FragColor = texture2D(uSampler, vTextureCoord);
+        }
+        `
+
         var shaderProgram = buildShaderProgram(gl,
-            `
-            /*
-                uniform: variables that change per "primitive". Shader input. Both vertex or fragment shaders. Read-only.
-                        Constant during: a "draw" call.
-                attribute: variables that may change per vertex. Used in: vertex shader (only). Is read-only. Is input.
-                        Vary from vertex to vertex. (per vertex)
-                varying: interpolated data shared. Vertex->Fragment. Vertex shader: output. Fragment shader: input.
-                        Not constant: vary from pixel to pixel (per pixel).
-
-                Pipeline: "via varying" or implicit.
-                        vertes shader -> other shaders -> fragment shader
-
-
-                [1] https://stackoverflow.com/questions/17537879/in-webgl-what-are-the-differences-between-an-attribute-a-uniform-and-a-varying
-            */
-
-
-            //***************************************
-            //  VERTEX shader
-            //***************************************
-
-            //code 1
-            attribute vec2 a_position2d;
-            // code 2
-            //attribute vec4 aVertexPosition;
-
-            attribute vec2 aTextureCoord;
-            varying highp vec2 vTextureCoord;
-
-            void main() {
-                gl_Position =  (vec4(a_position2d, 0.0, 1.0));
-                vTextureCoord = aTextureCoord;
-            }
-            ` ,
-
-
-             // fragment shader:
-            `
-            //***************************************
-            //  FRAGMENT shader
-            //***************************************
-            precision mediump float;
-            uniform vec3 u_color;
-
-            varying highp vec2 vTextureCoord;
-            uniform sampler2D uSampler;
-
-            void main() {
-                gl_FragColor = texture2D(uSampler, vTextureCoord);
-            }
-            `
+            VERTEX_SHADER,
+            FRAGMENT_SHADER
         );
 
-        const pinfo = {
+        const prefs = {
           //program: shaderProgram,
           attribLocations: {
             // for need for 'vTextureCoord'
@@ -96,29 +121,23 @@
           },
         };
 
-        console.log(pinfo);
+        console.log(prefs);
 
 
+        /*
         const my_texture = loadTexture(gl, './painting.gif');
         console.log(my_texture);
+        */
 
 
         //var textureCoordBuffer = texture__textureCoordBuffer(gl).textureCoordBuffer;
-        const textureCoordBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-        const textureCoordinates = [
-            // Front
-            0.0,  0.0,
-            1.0,  0.0,
-            1.0,  1.0,
-            0.0,  1.0,
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),  gl.STATIC_DRAW);
+
+
+        textureCoordBuffer = texture_coords_buffer(gl);
 
 
 
-
-/*
+        function do_things(gl, vertexCoords_array) {
         var buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);// Set this buffer as the current one for the next buffer operations
         // Fill the buffer with the triangles.
@@ -130,24 +149,27 @@
         gl.bufferData(gl.ARRAY_BUFFER, vertexCoords_array, gl.STATIC_DRAW);
         // Get a reference to the "a_position" variable of the vertex shader,
         // which we'll connect with the 3D vertex data now stored in the current WebGL buffer.
-        var sh_position = gl.getAttribLocation(shaderProgram, "a_position");
-        // Enable the a_position vertex attribute for rendering
-        // All client-side capabilities are disabled by default,
-        // including all vertex attribute arrays.
-        gl.enableVertexAttribArray(sh_position);
-        // Specify the data structure of the array that will be used to store the vertex position data.
-        // The parameters indicate that the vertexPos attribute is:
-        // - a list of elements with 2 components each (2D vertices)
-        // - of type gl.Float
-        // - and they should be un-normalized.
-        // The final two parameters are rarely used.
-        // The first specifies the stride of the data i.e. the amount of storage allocated to each element
-        // and the second specifies the offset i.e. where the data starts.
-        // For standard JavaScript arrays both are set to zero to indicate tight packing and no offset.
-        gl.vertexAttribPointer(sh_position, coordDimensions, gl.FLOAT, false, 0, 0);
+        /*
+            var sh_position = gl.getAttribLocation(shaderProgram, "a_position");
+            // Enable the a_position vertex attribute for rendering
+            // All client-side capabilities are disabled by default,
+            // including all vertex attribute arrays.
+            gl.enableVertexAttribArray(sh_position);
+
+            // Specify the data structure of the array that will be used to store the vertex position data.
+            // The parameters indicate that the vertexPos attribute is:
+            // - a list of elements with 2 components each (2D vertices)
+            // - of type gl.Float
+            // - and they should be un-normalized.
+            // The final two parameters are rarely used.
+            // The first specifies the stride of the data i.e. the amount of storage allocated to each element
+            // and the second specifies the offset i.e. where the data starts.
+            // For standard JavaScript arrays both are set to zero to indicate tight packing and no offset.
+            gl.vertexAttribPointer(sh_position, coordDimensions, gl.FLOAT, false, 0, 0);
+        */
         var sh_color = gl.getUniformLocation(shaderProgram, "u_color");
         gl.uniform3f(sh_color, objColor[0], objColor[1], objColor[2]);
-*/
+
         //gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -173,15 +195,15 @@
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
 
-        //texture_coords(gl, textureCoordBuffer, pinfo);
+        //texture_coords(gl, textureCoordBuffer, prefs);
         const num = 2; // every coordinate composed of 2 values
         const type = gl.FLOAT; // the data in the buffer is 32 bit float
         const normalize = false; // don't normalize
         const stride = 0; // how many bytes to get from one set to the next
         const offset = 0; // how many bytes inside the buffer to start from
         gl.bindBuffer(gl.ARRAY_BUFFER, /*buffers.textureCoord*/ textureCoordBuffer);
-        gl.vertexAttribPointer(pinfo.attribLocations.textureCoord, num, type, normalize, stride, offset);
-        gl.enableVertexAttribArray(pinfo.attribLocations.textureCoord);
+        gl.vertexAttribPointer(prefs.attribLocations.textureCoord, num, type, normalize, stride, offset);
+        gl.enableVertexAttribArray(prefs.attribLocations.textureCoord);
 
 
         gl.useProgram(shaderProgram);
@@ -192,7 +214,7 @@
         // Bind the texture to texture unit 0
         gl.bindTexture(gl.TEXTURE_2D, my_texture);
         // Tell the shader we bound the texture to texture unit 0
-        gl.uniform1i(pinfo.uniformLocations.uSampler, 0);
+        gl.uniform1i(prefs.uniformLocations.uSampler, 0);
 
         {
           const vertexCount = 3; ////36;
@@ -200,6 +222,18 @@
           const offset = 0;
           gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         }
+        }
+
+
+        var coordDimensions=2;
+       var objColor=[0.333, 0.666, 0.999];
+       var vertexCoords_array = new Float32Array([
+           -0.5, -0.5,
+            0.5, -0.5,
+           -0.5,  0.5,
+            //0.5,  0.5
+       ]);
+        do_things(gl, vertexCoords_array);
 
 
     }
@@ -239,39 +273,54 @@
     }
 
 
+    const image = new Image();
     function load_image(url, then)
     {
-        const image = new Image();
+        //const image = new Image();
         image.onload = then;
         image.src = url;
+        console.log("url", url);
     }
 
 
-    load_image(url, function() {
+    function loadTexture2(gl, url /*, callback2*/) {
+        console.log(gl);
 
-      const level = 0;
-      const internalFormat = gl.RGBA;
-      const width = 1;
-      const height = 1;
-      const border = 0;
-      const srcFormat = gl.RGBA;
-      const srcType = gl.UNSIGNED_BYTE;
+        const level = 0;
+        const internalFormat = gl.RGBA;
+        const width = 1;
+        const height = 1;
+        const border = 0;
+        const srcFormat = gl.RGBA;
+        const srcType = gl.UNSIGNED_BYTE;
 
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-                srcFormat, srcType, image);
+        const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                      width, height, border, srcFormat, srcType,
+                      pixel);
 
-      if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-         gl.generateMipmap(gl.TEXTURE_2D);
-      } else {
-         // Turn off mip-mapping
-         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      }
-      console.log("Image loaded:",texture);
 
-    });
+        load_image(url, function() {
+            console.log(gl);
+
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                    srcFormat, srcType, image);
+
+            if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+               gl.generateMipmap(gl.TEXTURE_2D);
+            } else {
+               // Turn off mip-mapping
+               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+               gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            }
+            console.log("Image loaded:",texture);
+
+        });
+        return texture;
+    }
+
 
 
     /*
@@ -305,7 +354,7 @@
     }
 
     /*
-    function texture_coords(gl, textureCoordBuffer, pinfo)
+    function texture_coords(gl, textureCoordBuffer, prefs)
     {
         const num = 2; // every coordinate composed of 2 values
         const type = gl.FLOAT; // the data in the buffer is 32 bit float
@@ -313,8 +362,8 @@
         const stride = 0; // how many bytes to get from one set to the next
         const offset = 0; // how many bytes inside the buffer to start from
         gl.bindBuffer(gl.ARRAY_BUFFER,  textureCoordBuffer);
-        gl.vertexAttribPointer(pinfo.attribLocations.textureCoord, num, type, normalize, stride, offset);
-        gl.enableVertexAttribArray(pinfo.attribLocations.textureCoord);
+        gl.vertexAttribPointer(prefs.attribLocations.textureCoord, num, type, normalize, stride, offset);
+        gl.enableVertexAttribArray(prefs.attribLocations.textureCoord);
     }
     */
 
@@ -327,6 +376,18 @@
 
     //function drawObject(gl, shaderProgram, coordDimensions, objColor, vertexCoords_array) {
     //}
+
+    /*
+    // Note!!!: You'd have to change this code to delete the resources YOU created.
+    gl.deleteTexture(someTexture);
+    gl.deleteTexture(someOtherTexture);
+    gl.deleteBuffer(someBuffer);
+    gl.deleteBuffer(someOtherBuffer);
+    gl.deleteRenderbuffer(someRenderbuffer);
+    gl.deleteFramebuffer(someFramebuffer);
+    */
+
+
     </script>
 </body>
 </html>
