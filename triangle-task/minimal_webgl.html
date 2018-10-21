@@ -36,24 +36,13 @@
 
 
 
-        function make_buffer(textureCoordinates)
+        function make_buffer(gl, textureCoordinates)
         {
             const textureCoordBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
             //const textureCoordinates = ;
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),  gl.STATIC_DRAW);
             return textureCoordBuffer;
-        }
-
-        function texture_coords_buffer()
-        {
-            return make_buffer([
-                // Front
-                0.0,  0.0,
-                1.0,  0.0,
-                1.0,  1.0,
-                0.0,  1.0,
-            ]);
         }
 
         /*
@@ -138,7 +127,6 @@
         //var textureCoordBuffer = texture__textureCoordBuffer(gl).textureCoordBuffer;
 
 
-        textureCoordBuffer = texture_coords_buffer(gl);
 
 
 
@@ -199,6 +187,28 @@
             const indices = [ 0,  1,  2,  ];
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
+
+            function  feed_attrib_with_filled_buffer(gl, attrib_index, attrib_buffer, num_per_vertex)
+            {
+                //texture_coords(gl, textureCoordBuffer, prefs);
+                //const num_per_vertex = 2; // every coordinate composed of 2 values
+                const type = gl.FLOAT; // the data in the buffer is 32 bit float
+                const normalize = false; // don't normalize
+                const stride = 0; // how many bytes to get from one set to the next
+                const offset = 0; // how many bytes inside the buffer to start from
+                gl.bindBuffer(gl.ARRAY_BUFFER, attrib_buffer);
+                gl.vertexAttribPointer(attrib_index, num_per_vertex, type, normalize, stride, offset);
+                gl.enableVertexAttribArray(attrib_index);
+            };
+
+            textureCoordBuffer = make_buffer(gl, [
+                            0.0,  0.0,
+                            1.0,  0.0,
+                            1.0,  1.0,
+                            0.0,  1.0,
+                        ]);
+
+            /*
             (function(attrib_buffer, num_per_vertex)
             {
                 //texture_coords(gl, textureCoordBuffer, prefs);
@@ -211,15 +221,19 @@
                 gl.vertexAttribPointer(prefs.attribLocations.textureCoord, num_per_vertex, type, normalize, stride, offset);
                 gl.enableVertexAttribArray(prefs.attribLocations.textureCoord);
             })(textureCoordBuffer, 2);
+            */
+            feed_attrib_with_filled_buffer(gl, prefs.attribLocations.textureCoord, textureCoordBuffer, 2)
 
 
             // MISSING PART!
-            var position_attrib_buffer = make_buffer([
+            var position_attrib_buffer = make_buffer(gl, [
+                //2 x vertices. Like a queue.
                 0.3,  0.3,
                 0.1,  0.2,
                 0.1,  0.1,
             ]);
 
+            /*
             (function(attrib_buffer, num_per_vertex)
             {
             //const num_per_vertex = 2; // every coordinate composed of 2 values
@@ -231,6 +245,8 @@
             gl.vertexAttribPointer(prefs.attribLocations.a_position2d, num_per_vertex, type, normalize, stride, offset);
             gl.enableVertexAttribArray(prefs.attribLocations.a_position2d);
             })(position_attrib_buffer, 2);
+            */
+            feed_attrib_with_filled_buffer(gl, prefs.attribLocations.a_position2d, position_attrib_buffer, 2);
 
 
             gl.useProgram(shaderProgram);
