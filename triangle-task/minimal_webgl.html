@@ -15,10 +15,16 @@
     <script>
     'use strict;'
 
-    // based on
-    //      https://github.com/waldyrious/minimal-webgl/blob/gh-pages/index.xhtml
-    // texture  code based on:
-    //     https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
+    /*
+    Code based on
+          https://github.com/waldyrious/minimal-webgl/blob/gh-pages/index.xhtml
+    Texture  code based on:
+         https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
+    Textures:
+         https://giphy.com/gifs/3d-art-van-gogh-BoKxbHbnDZaJa
+         http://www.guoguiyan.com/tile-wallpapers/68440135.html
+         http://www.guoguiyan.com/tile-wallpapers/69832855.html
+    */
 
     window.onload = main;
 
@@ -62,9 +68,19 @@
        //global_globjs.texture = texture_;
        guy1.texture = texture_;
 
+       var TEXTURES = [
+           './images/painting.gif',
+           './images/68440135-tile-wallpapers.jpg',
+           './images/68518629-tile-wallpapers.jpg',
+           './images/69832855-tile-wallpapers.jpg',
+           './images/70126030-tile-wallpapers.jpg',
+           './images/68823035-tile-wallpapers.jpg',
+       ];
+
        var bg_texture_ = load_texture(gl,
-           './images/68440135-tile-wallpapers.jpg'
+           //'./images/68440135-tile-wallpapers.jpg'
            //'./images/painting.gif'
+           TEXTURES[3]  // 2,3
        );
        guy2.texture_bg = bg_texture_;
        //global_globjs.texture = bg_texture_;
