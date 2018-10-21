@@ -78,10 +78,23 @@ function OpenglTrianglePainter() {
         //this.gl = gl;
     }
 
+
+    // IBO
+    function make_index_buffer(gl, indices)
+    {
+        const indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        //const indices = [ 0,  1,  2,  ];
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+    }
+
     // private
-    function make_buffer(gl, floatCoordinates)
+    // Vertex Buffer Object (VBO)
+    function make_vertex_buffer(gl, floatCoordinates)
     {
         const buffer = gl.createBuffer();
+        // Set this buffer as the current one for the next buffer operations:
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);   // Set this buffer as the current one
         gl.bufferData(gl.ARRAY_BUFFER, floatCoordinates,  gl.STATIC_DRAW);
         return buffer;
@@ -106,9 +119,8 @@ function OpenglTrianglePainter() {
     {
 
         /*
-        var textureCoordBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);  // Set this buffer as the current one for the next buffer operations
-        gl.bufferData(gl.ARRAY_BUFFER, vertexCoords_array, gl.STATIC_DRAW);
+        var textureCoordBuffer = make_vertex_buffer(vertexCoords_array);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
         */
         /*
         // no program bound
@@ -116,7 +128,6 @@ function OpenglTrianglePainter() {
         gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
         */
 
-        //gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCoords_array.length/coordDimensions);
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -133,22 +144,16 @@ function OpenglTrianglePainter() {
               modelViewMatrix);
         */
 
-
-        const indexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         const indices = [ 0,  1,  2,  ];
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        make_index_buffer(gl, indices);
 
 
-
-        let textureCoordBuffer = make_buffer(gl, texture_coords_array);
-
+        let textureCoordBuffer = make_vertex_buffer(gl, texture_coords_array);
         feed_vertex_attrib_with_filled_buffer(gl, this.refs.attribLocations.textureCoord, textureCoordBuffer, 2)
 
 
         // MISSING PART!
-        var position_attrib_buffer = make_buffer(gl, triangle_vertices);
-
+        var position_attrib_buffer = make_vertex_buffer(gl, triangle_vertices);
         feed_vertex_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
 
 
