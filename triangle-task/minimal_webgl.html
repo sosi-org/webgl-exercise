@@ -19,12 +19,11 @@
 
     window.onload = main;
 
-    var glbal = function(){
-
-    };
+function Glbal() {
 
 
-    glbal.init = function(gl) {
+    console.log("GG", this);
+    this.init = function(gl) {
 
         /*
             uniform: variables that change per "primitive". Shader input. Both vertex or fragment shaders. Read-only.
@@ -100,7 +99,7 @@
         console.log(this.refs);
     }
 
-    glbal.do_things = function (gl, vertexCoords_array, objColor, texture)
+    this.do_things = function (gl, vertexCoords_array, objColor, texture)
         {
             var buffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);// Set this buffer as the current one for the next buffer operations
@@ -210,7 +209,9 @@
               gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
             }
         }; // do_things
+};
 
+var glbal = new Glbal();
 
     function make_buffer(gl, textureCoordinates)
     {
@@ -250,6 +251,9 @@
 
         var texture_ = loadTexture2(gl, './painting.gif');
         //var coordDimensions=2;
+
+        console.log("2", glbal);
+
        glbal.objColor=[0.333, 0.666, 0.999];
        glbal.vertexCoords_array = new Float32Array([
            -0.5, -0.5,
