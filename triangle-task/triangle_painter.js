@@ -61,16 +61,14 @@ function OpenglTrianglePainter() {
         this.shaderProgram = shaderProgram;
 
         this.refs = {
-          //program: shaderProgram,
-          attribLocations: {
+          //attribLocations: {
             // for need for 'vTextureCoord'
-            //vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
             a_triangleCorner_vertexPosition2d: gl.getAttribLocation(shaderProgram, 'a_triangleCorner_vertexPosition2d'),
             textureCoord: gl.getAttribLocation(shaderProgram, 'textureCornerVectexCoord'),
-          },
-          uniformLocations: {
+          //},
+          //uniformLocations: {
             uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
-          },
+          //},
         };
 
         console.log(this.refs);
@@ -149,12 +147,12 @@ function OpenglTrianglePainter() {
 
 
         let textureCoordBuffer = make_vertex_buffer(gl, texture_coords_array);
-        feed_vertex_attrib_with_filled_buffer(gl, this.refs.attribLocations.textureCoord, textureCoordBuffer, 2)
+        feed_vertex_attrib_with_filled_buffer(gl, this.refs.textureCoord, textureCoordBuffer, 2)
 
 
         // MISSING PART!
         var position_attrib_buffer = make_vertex_buffer(gl, triangle_vertices);
-        feed_vertex_attrib_with_filled_buffer(gl, this.refs.attribLocations.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
+        feed_vertex_attrib_with_filled_buffer(gl, this.refs.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
 
 
         gl.useProgram(this.shaderProgram);
@@ -169,7 +167,7 @@ function OpenglTrianglePainter() {
         // Bind the texture to texture unit 0
         gl.bindTexture(gl.TEXTURE_2D, texture);
         // Tell the shader we bound the texture to texture unit 0
-        gl.uniform1i(this.refs.uniformLocations.uSampler, 0);
+        gl.uniform1i(this.refs.uSampler, 0);
 
         {
           const vertexCount = 3; ////36;
