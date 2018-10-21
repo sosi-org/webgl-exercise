@@ -6,7 +6,7 @@
 </head>
 <body>
     Texture preview: <img  src="./images/painting.gif" width=50 height=50/> <br/>
-    WebGL Canvas:<br/>
+    WebGL canvas:<br/>
     <canvas id="glcanvas" width="640" height="480">
         Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
     </canvas>
@@ -23,7 +23,7 @@
     window.onload = main;
 
 
-    var guy = new OpenglTrianglePainter();
+    var guy1 = new OpenglTrianglePainter();
     var guy2 = new OpenglTrianglePainter();
 
     // state of the shape
@@ -53,24 +53,24 @@
     {
 
         let gl = init_gl();
-       guy.init_shaders(gl);
+       guy1.init_shaders(gl);
        guy2.init_shaders(gl);
 
        global_globj.gl = gl;
 
        var texture_ = load_texture(gl, './images/painting.gif');
        //global_globjs.texture = texture_;
-       guy.texture = texture_;
+       guy1.texture = texture_;
 
        var bg_texture_ = load_texture(gl,
            './images/68440135-tile-wallpapers.jpg'
+           //'./images/painting.gif'
        );
        guy2.texture_bg = bg_texture_;
        //global_globjs.texture = bg_texture_;
 
 
        global_state.brightnessBoost = [0., 0., 0.];
-       global_state.brightnessBoostBG2 = [1., 0., 0.];
 
        global_state.triangle_vertices = new Float32Array([
            //2 x vertices. Like a queue.
@@ -101,11 +101,24 @@
            */
        ]);
 
-       global_state.triangle_strip_vertices2 = new Float32Array([
-           -1.,  1.,
+       //var MINY = -0.3;
+       //var MINY = -0.395;
+       var MINY = -1.0;
+
+       //canv = document.getElementById("glcanvas");
+       //ratio = canv.height/canv.width;
+       //console.log(canv.width, canv.height, canv.height/canv.width, -ratio*2+(1.0));
+       //  // make sure canv.height < canv.width
+
+       global_state.quadrangle_vertices = new Float32Array([
+           -1.0,  0.99+0.01,
+           1.0,  0.99+0.01,
+           1.0,  MINY,
+           -1.0,  MINY,
+           /*-0.8,  0.5,
            0.3,  1.,
            0.3,  -0.1,
-           -0.5,  -0.5,
+           -0.5,  -0.5,*/
        ]);
 
        global_state.texture_coords_array = new Float32Array([
@@ -121,22 +134,25 @@
             0.0,  1.0,
         ]);
 
-        //guy.draw_everything(gl);
-        guy.clear(global_globj.gl);
-        guy2.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array_bg, global_state.triangle_strip_vertices2, global_state.brightnessBoostBG2, guy2.texture_bg, 3+3);
-        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, guy.texture, 3);
+        global_state.u_texture_offset = [0.0, 0];
+
+        guy1.clear(global_globj.gl);
+        guy2.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array_bg, global_state.quadrangle_vertices, global_state.brightnessBoostBG2, guy2.texture_bg, 3+3, global_state.u_texture_offset);
+        guy1.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, guy1.texture, 3, null);
 
         requestAnimationFrame(render);
 
     }
 
+    function rnd(amp) {
+        return (Math.random()*2-1)*amp;
+    }
     function render_rate_limited(time) {
-        //guy.triangle_vertices[0] += 0.002;
-        global_state.triangle_vertices[0] += (Math.random()*2-1)*0.002 + 0.0002;
-        global_state.triangle_vertices[1] += (Math.random()*2-1)*0.002;
+        global_state.triangle_vertices[0] += rnd(0.002) + 0.0002;
+        global_state.triangle_vertices[1] += rnd(0.002);
 
-        global_state.triangle_strip_vertices2[0] = 1 + (Math.random()*2-1)*0.01;
-        global_state.triangle_strip_vertices2[1] = 0 + (Math.random()*2-1) * 0.01;
+        //global_state.quadrangle_vertices[0] += rnd(0.002);
+        //global_state.quadrangle_vertices[1] += rnd(0.002);
 
         global_state.brightnessBoost[0] = Math.sin(time*0.001 * Math.PI*2)*1 - 0.5;
 
@@ -144,10 +160,12 @@
         if (global_state.brightnessBoost[0] < 0.)
             global_state.brightnessBoost[0] = 0.
 
-        //guy.draw_everything(guy.gl);
-        guy.clear(global_globj.gl);
-        guy2.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array_bg, global_state.triangle_strip_vertices2, global_state.brightnessBoostBG2, guy2.texture_bg, 3+3);
-        guy.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, guy.texture, 3);
+        global_state.u_texture_offset[0] += 0.001*0.4*2;
+        //global_state.u_texture_offset[0] = global_state.u_texture_offset[0] % 2.0;
+
+        guy1.clear(global_globj.gl);
+        guy2.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array_bg, global_state.quadrangle_vertices, global_state.brightnessBoostBG2, guy2.texture_bg, 3+3, global_state.u_texture_offset);
+        guy1.draw_textured_triangle(global_globj.gl, global_state.texture_coords_array, global_state.triangle_vertices, global_state.brightnessBoost, guy1.texture, 3, null);
 
     }
 

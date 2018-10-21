@@ -30,6 +30,8 @@ function OpenglTrianglePainter() {
             attribute vec2 textureCornerVectexCoord;
             //attribute vec2 a_BGRectCornerXY;
 
+            //uniform vec2 texture_offset;
+
             varying highp vec2 vTextureCoord;
             //varying highp vec2 v_BGTextureXY;
             //varying = will be interpolated. output.
@@ -37,7 +39,12 @@ function OpenglTrianglePainter() {
             void main() {
                 gl_Position =  (vec4(a_triangleCorner_vertexPosition2d, 0.0, 1.0));
                 vTextureCoord = textureCornerVectexCoord;
+                /*
+                //vTextureCoord = (textureCornerVectexCoord + texture_offset) % vec2(1.,1.);
+                vTextureCoord.x = mod2pn(textureCornerVectexCoord.x + texture_offset.x);
+                vTextureCoord.y = mod2pn(textureCornerVectexCoord.y + texture_offset.y);
                 //v_BGTextureXY = a_BGRectCornerXY;
+                */
             }
         `;
 
@@ -52,13 +59,30 @@ function OpenglTrianglePainter() {
             uniform sampler2D uSampler;
             //uniform sampler2D uBGSampler;
 
+            //uniform vec2 texture_offset;
+            uniform vec2 texture_offset;
+
             // varying = interpolated. input.
             varying highp vec2 vTextureCoord;
             //varying highp vec2 v_BGTextureXY;
 
+            float mod2pn(float x) {
+                //return mod(x, 2.0);
+                //return mod(mod(x+1.0, 2.0)+2.0,2.0)-1.0;
+                //const float Q = 2.;
+                //const float HQ = Q * 0.5;
+                const float Q = 1.;
+                const float HQ = 0.0;
+                return mod(mod(x+HQ, Q)+Q, Q)-HQ;
+            }
+            vec2 mod2pn2d(vec2 v) {
+                return vec2(mod2pn(v.x), mod2pn(v.y));
+            }
+
             void main() {
                 gl_FragColor =
-                    texture2D(uSampler, vTextureCoord)
+                    //texture2D(uSampler, vTextureCoord  /*+ texture_offset*/)
+                    texture2D(uSampler, mod2pn2d(vTextureCoord  + texture_offset))
                     + vec4(uBrightnessColour, 0.0)
                     //+ texture2D(uBGSampler, v_BGTextureXY) * 0.5
                     ;
@@ -78,9 +102,12 @@ function OpenglTrianglePainter() {
             a_textureVertex_position2d: gl.getAttribLocation(shaderProgram, 'textureCornerVectexCoord'),
             //a_BGRectCornerXY: gl.getAttribLocation(shaderProgram, 'a_BGRectCornerXY'),
 
+            u_texture_offset: gl.getUniformLocation(shaderProgram, 'texture_offset'),
+
             u_brightness: gl.getUniformLocation(shaderProgram, "uBrightnessColour"),
             uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
             //uBGSampler: gl.getUniformLocation(shaderProgram, 'uBGSampler'),
+
 
             //v_BGTextureXY
 
@@ -133,7 +160,7 @@ function OpenglTrianglePainter() {
         gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
-    this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture, num_vertices)
+    this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture, num_vertices, tex_offset)
     {
 
         //gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
@@ -192,7 +219,13 @@ function OpenglTrianglePainter() {
         // feed one uniform (not array)
         // uniform3f() must be called after useProgram(). This is necessary for all "uniform"s?
         //var u_brightness = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
-        gl.uniform3f(this.refs.u_brightness, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
+        if (brightnessBoost) {
+            gl.uniform3f(this.refs.u_brightness, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
+        }
+
+        if (tex_offset) {
+            gl.uniform2f(this.refs.u_texture_offset, tex_offset[0], tex_offset[1]);
+        }
 
         // How to feed a texture:
         tx = [gl.TEXTURE0, gl.TEXTURE1];
