@@ -165,4 +165,10 @@ function OpenglTrianglePainter() {
           gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
         }
     }; // draw_textured_triangle
+
+
+    this.draw_everything = function(){
+        guy.draw_textured_triangle(guy.gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
+    }
+
 };
