@@ -1,45 +1,66 @@
 <!DOCTYPE html>
 <html  lang="en">
 <head>
-    <title>WebGL example</title>
+    <title>Sohail's WebGL example</title>
     <meta charset="utf-8" />
 </head>
 <body>
     <canvas id="glcanvas" width="640" height="480">
         Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
     </canvas>
-    <!--img  src="./painting.gif"/-->
+    <img  src="./painting.gif"/>
     <script>
 
-    // based on https://github.com/waldyrious/minimal-webgl/blob/gh-pages/index.xhtml
-    // texture from https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
+    // based on
+    //      https://github.com/waldyrious/minimal-webgl/blob/gh-pages/index.xhtml
+    // texture  code based on:
+    //     https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 
     window.onload = main;
     function main() {
         // Get the WebGL context from the canvas
-        try { var gl = document.getElementById("glcanvas").getContext("webgl") } catch(ex) {}//02
-        if (!gl) { console.log("Unable to initialize WebGL. Your browser may not support it."); return; }//03
-
-
-
-
-
-
+        try {
+            var gl = document.getElementById("glcanvas").getContext("webgl");
+        } catch(ex) {
+            console.log("Unable to initialize WebGL. Your browser may not support it.");
+            var gl = null;
+            alert('Sorry, no WebGL');
+        }
 
 
         // Setup the shader program with the vertex shader and the fragment shader
 
+        /*
+        */
         var shaderProgram = buildShaderProgram(gl,
             // The only attribute set for the vertices is the position. We could also set normals, color, texture, etc.
-             // vertex shader:
             `
-            attribute vec2 a_position;
+            // VERTRX shader
+            /*
+                uniform: variables that change per "primitive". Shader input. Both vertex or fragment shaders. Read-only.
+                        Constant during: a "draw" call.
+                attribute: variables that may change per vertex. Used in: vertex shader (only). Is read-only. Is input.
+                        Vary from vertex to vertex. (per vertex)
+                varying: interpolated data shared. Vertex->Fragment. Vertex shader: output. Fragment shader: input.
+                        Not constant: vary from pixel to pixel (per pixel).
+
+                Pipeline: "via varying" or implicit.
+                        vertes shader -> other shaders -> fragment shader
+
+
+                [1] https://stackoverflow.com/questions/17537879/in-webgl-what-are-the-differences-between-an-attribute-a-uniform-and-a-varying
+            */
+
+            //code 1
+            attribute vec2 a_position2d;
+            // code 2
+            //attribute vec4 aVertexPosition;
 
             attribute vec2 aTextureCoord;
             varying highp vec2 vTextureCoord;
 
             void main() {
-                gl_Position =  (vec4(a_position, 0.0, 1.0));
+                gl_Position =  (vec4(a_position2d, 0.0, 1.0));
                 vTextureCoord = aTextureCoord;
             }
             ` ,
@@ -62,7 +83,8 @@
         const pinfo = {
           //program: shaderProgram,
           attribLocations: {
-            vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            //vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            a_position2d: gl.getAttribLocation(shaderProgram, 'a_position2d'),
             textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
           },
           uniformLocations: {
@@ -71,6 +93,7 @@
         };
 
         console.log(pinfo);
+        return;
 
         const my_texture = loadTexture(gl, './painting.gif');
 
