@@ -58,9 +58,9 @@ function OpenglTrianglePainter() {
 
             void main() {
                 gl_FragColor =
-                    texture2D(uSampler, vTextureCoord)
+                    texture2D(uSampler, vTextureCoord) * 0.5
                     + vec4(uBrightnessColour, 0.0)
-                    + texture2D(uBGSampler, v_BGTextureXY)
+                    + texture2D(uBGSampler, v_BGTextureXY) * 0.5
                     ;
             }
         `
@@ -127,7 +127,7 @@ function OpenglTrianglePainter() {
         gl.enableVertexAttribArray(attrib_index);
     };
 
-    this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture)
+    this.draw_textured_triangle = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture, texture2)
     {
 
         gl.clearColor(0, 0, 0, 1); // defaults to white (1,1,1)
@@ -182,6 +182,11 @@ function OpenglTrianglePainter() {
         gl.activeTexture(gl.TEXTURE0);   // Tell WebGL we want to affect texture unit 0
         gl.bindTexture(gl.TEXTURE_2D, texture);        // Bind the texture to texture unit 0
         gl.uniform1i(this.refs.uSampler, 0);        // Tell the shader we bound the texture to texture unit 0
+
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, texture2);
+        gl.uniform1i(this.refs.uBGSampler, 1);
+
 
         // =====================
         // now, go.
