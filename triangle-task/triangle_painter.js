@@ -47,13 +47,14 @@ function OpenglTrianglePainter() {
         //  FRAGMENT shader
         //***************************************
         precision mediump float;
-        uniform vec3 u_color;
+        uniform vec3 uBrightnessColour;
 
+        // varying = interpolated
         varying highp vec2 vTextureCoord;
         uniform sampler2D uSampler;
 
         void main() {
-            gl_FragColor = texture2D(uSampler, vTextureCoord) + vec4(u_color,0.0);
+            gl_FragColor = texture2D(uSampler, vTextureCoord) + vec4(uBrightnessColour, 0.0);
         }
         `
 
@@ -104,7 +105,7 @@ function OpenglTrianglePainter() {
         */
         /*
         // no program bound
-        var sh_color = gl.getUniformLocation(this.shaderProgram, "u_color");
+        var sh_color = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
         gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
         */
 
@@ -147,7 +148,7 @@ function OpenglTrianglePainter() {
         gl.useProgram(this.shaderProgram);
 
         // uniform3f() must be called after useProgram()
-        var sh_color = gl.getUniformLocation(this.shaderProgram, "u_color");
+        var sh_color = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
         gl.uniform3f(sh_color, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
 
 
