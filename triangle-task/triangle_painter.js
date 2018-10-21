@@ -94,7 +94,7 @@ function OpenglTrianglePainter() {
         gl.enableVertexAttribArray(attrib_index);
     };
 
-    this.draw_everything = function (gl, vertexCoords_array, triangle_vertices, brightnessBoost, texture)
+    this.draw_everything = function (gl, texture_coords_array, triangle_vertices, brightnessBoost, texture)
     {
 
         /*
@@ -133,12 +133,7 @@ function OpenglTrianglePainter() {
 
 
 
-        let textureCoordBuffer = make_buffer(gl, new Float32Array([
-                        0.0,  0.0,
-                        1.0,  0.0,
-                        1.0,  1.0,
-                        0.0,  1.0,
-                    ]));
+        let textureCoordBuffer = make_buffer(gl, texture_coords_array);
 
         feed_attrib_with_filled_buffer(gl, this.refs.attribLocations.textureCoord, textureCoordBuffer, 2)
 
