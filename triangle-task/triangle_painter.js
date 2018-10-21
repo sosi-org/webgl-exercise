@@ -132,32 +132,41 @@ function OpenglTrianglePainter() {
               modelViewMatrix);
         */
 
-        // Feed indices
+        // =====================
+        // Feed attributes
+        // =====================
+        // Feed indices (IBO)
         const indices = [ 0,  1,  2,  ];
         make_index_buffer(gl, indices);
 
-        // Feed vertices
+        // Feed vertices (VBO): texture
         let textureCoordBuffer = make_vertex_buffer(gl, texture_coords_array);
         feed_vertex_attrib_with_filled_buffer(gl, this.refs.a_textureVertex_position2d, textureCoordBuffer, 2)
-        // MISSING PART!
+        // Feed vertices (VBO): vertices   // MISSING PART!
         var position_attrib_buffer = make_vertex_buffer(gl, triangle_vertices);
         feed_vertex_attrib_with_filled_buffer(gl, this.refs.a_triangleCorner_vertexPosition2d, position_attrib_buffer, 2);
 
 
+        // necessary to do before feeding the uniforms
         gl.useProgram(this.shaderProgram);
 
+        // =====================
         // feed the uniforms
-        // uniform3f() must be called after useProgram()
+        // =====================
+
+        // feed one uniform (not array)
+        // uniform3f() must be called after useProgram(). This is necessary for all "uniform"s?
         var u_brightness = gl.getUniformLocation(this.shaderProgram, "uBrightnessColour");
         gl.uniform3f(u_brightness, brightnessBoost[0], brightnessBoost[1], brightnessBoost[2]);
 
-        // Tell WebGL we want to affect texture unit 0
-        gl.activeTexture(gl.TEXTURE0);
-        // Bind the texture to texture unit 0
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        // Tell the shader we bound the texture to texture unit 0
-        gl.uniform1i(this.refs.uSampler, 0);
+        // How to feed a texture:
+        gl.activeTexture(gl.TEXTURE0);   // Tell WebGL we want to affect texture unit 0
+        gl.bindTexture(gl.TEXTURE_2D, texture);        // Bind the texture to texture unit 0
+        gl.uniform1i(this.refs.uSampler, 0);        // Tell the shader we bound the texture to texture unit 0
 
+        // =====================
+        // now, go.
+        // =====================
         {
           const vertexCount = 3;
           const type = gl.UNSIGNED_SHORT;
