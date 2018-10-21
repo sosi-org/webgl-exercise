@@ -75,10 +75,14 @@ var guy = new OpenglTrianglePainter();
 
     function render_rate_limited(time) {
         //guy.triangle_vertices[0] += 0.002;
-        guy.triangle_vertices[0] += (Math.random()*2-1)*0.002;
+        guy.triangle_vertices[0] += (Math.random()*2-1)*0.002 + 0.0002;
         guy.triangle_vertices[1] += (Math.random()*2-1)*0.002;
 
-        guy.brightnessBoost[0] = Math.sin(time*0.001 * 2)*1 - 0.5;
+        guy.brightnessBoost[0] = Math.sin(time*0.001 * Math.PI*2)*1 - 0.5;
+
+        guy.texture_coords_array[1] = (Math.sin(time*0.001 * 1* Math.PI) +1) * 0.5;
+        console.log(guy.texture_coords_array[1], Math.PI);
+
         if (guy.brightnessBoost[0] < 0.) guy.brightnessBoost[0] = 0.
         guy.draw_everything(guy.gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
 
