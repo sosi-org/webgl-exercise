@@ -19,7 +19,7 @@
 
     window.onload = main;
 
-function Glbal() {
+function OpenglTrianglePainter() {
 
 
     console.log("GG", this);
@@ -183,7 +183,7 @@ function Glbal() {
         }; // draw_everything
 };
 
-var guy = new Glbal();
+var guy = new OpenglTrianglePainter();
 
     function make_buffer(gl, textureCoordinates)
     {
@@ -226,6 +226,7 @@ var guy = new Glbal();
 
         // not used
        guy.objColor=[0.333, 0.666, 0.999];
+       // not used!
        guy.vertexCoords_array = new Float32Array([
            -0.5, -0.5,
             0.5, -0.5,
@@ -233,8 +234,6 @@ var guy = new Glbal();
             //0.5,  0.5
        ]);
 
-       guy.vertexCoords_array
-       //guy.gl = gl;
        guy.texture = texture_;
 
        guy.init(gl);
