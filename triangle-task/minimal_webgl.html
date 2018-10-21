@@ -22,7 +22,8 @@
     window.onload = main;
 
 
-var guy = new OpenglTrianglePainter();
+    var guy = new OpenglTrianglePainter();
+    var global_gl = null;
 
     function make_buffer(gl, textureCoordinates)
     {
@@ -44,16 +45,16 @@ var guy = new OpenglTrianglePainter();
             alert('Sorry, no WebGL');
         }
 
+       guy.init_shaders(gl);
 
-        var texture_ = loadTexture2(gl, './images/painting.gif');
-        //var coordDimensions=2;
+       global_gl = gl;
 
+       var texture_ = loadTexture2(gl, './images/painting.gif');
+       guy.texture = texture_;
 
        guy.brightnessBoost = [0., 0., 0.]; //[0.333/10, 0.666/10, 0.999/10];
 
-       guy.texture = texture_;
 
-       guy.init(gl);
        guy.triangle_vertices = new Float32Array([
            //2 x vertices. Like a queue.
            -0.3,  0.3,
@@ -68,7 +69,9 @@ var guy = new OpenglTrianglePainter();
                        0.0,  1.0,
                    ]);
 
-        guy.draw_everything();
+        //guy.draw_everything(gl);
+        guy.draw_textured_triangle(global_gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
+
         requestAnimationFrame(render);
 
     }
@@ -83,7 +86,8 @@ var guy = new OpenglTrianglePainter();
         guy.texture_coords_array[1] = (Math.sin(time*0.001 * 1* Math.PI) +1) * 0.5;
 
         if (guy.brightnessBoost[0] < 0.) guy.brightnessBoost[0] = 0.
-        guy.draw_everything();
+        //guy.draw_everything(guy.gl);
+        guy.draw_textured_triangle(global_gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
 
     }
 

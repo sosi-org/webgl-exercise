@@ -2,8 +2,8 @@
 
 function OpenglTrianglePainter() {
 
-
-    this.init = function(gl) {
+    this.init_shaders = function(gl) {
+        // init()
 
         /*
             uniform: variables that change per "primitive". Shader input. Both vertex or fragment shaders. Read-only.
@@ -78,7 +78,7 @@ function OpenglTrianglePainter() {
 
         console.log(this.refs);
 
-        this.gl = gl;
+        //this.gl = gl;
     }
 
     function  feed_attrib_with_filled_buffer(gl, attrib_index, attrib_buffer, num_per_vertex)
@@ -167,8 +167,11 @@ function OpenglTrianglePainter() {
     }; // draw_textured_triangle
 
 
-    this.draw_everything = function(){
-        guy.draw_textured_triangle(guy.gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
+    /*
+    // Not good: single responsibility.
+    this.draw_everything = function(gl){
+        guy.draw_textured_triangle(gl, guy.texture_coords_array, guy.triangle_vertices, guy.brightnessBoost, guy.texture);
     }
+    */
 
 };
